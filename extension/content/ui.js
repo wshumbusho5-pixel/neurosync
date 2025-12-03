@@ -333,18 +333,39 @@ class NeuroSyncUI {
   }
 
   getDefinitionContent(term) {
-    // In Phase 0, return placeholder definitions
-    // In Phase 1, we'll fetch from a knowledge base or API
+    // Use knowledge base if available
+    if (window.knowledgeBase) {
+      const def = window.knowledgeBase.formatDefinition(term);
 
-    const definitions = {
-      'useState': 'useState is a React Hook that lets you add state to function components. Example: <code>const [count, setCount] = useState(0)</code>',
-      'useEffect': 'useEffect runs code after your component renders. It\'s like componentDidMount + componentDidUpdate combined.',
-      'async': 'async marks a function as asynchronous, allowing you to use await inside it.',
-      'await': 'await pauses execution until a Promise resolves, making async code read like synchronous code.',
-      'Promise': 'A Promise represents a value that will be available in the future (or an error if something goes wrong).'
-    };
+      if (def) {
+        let html = `
+          <p><strong>Definition:</strong> ${def.definition}</p>
+        `;
 
-    return definitions[term] || `<p>NeuroSync detected you might need help with <span class="neurosync-tooltip-term">${term}</span>.</p><p>In Phase 0, we're showing placeholder content. Phase 1 will have real definitions!</p>`;
+        if (def.analogy) {
+          html += `<p><strong>Think of it like:</strong> ${def.analogy}</p>`;
+        }
+
+        if (def.example) {
+          html += `<p><strong>Example:</strong></p><pre style="background: #f5f5f7; padding: 8px; border-radius: 4px; font-size: 12px; overflow-x: auto;">${this.escapeHtml(def.example)}</pre>`;
+        }
+
+        if (def.relatedTerms && def.relatedTerms.length > 0) {
+          html += `<p style="font-size: 12px; color: #86868b;"><strong>Related:</strong> ${def.relatedTerms.join(', ')}</p>`;
+        }
+
+        return html;
+      }
+    }
+
+    // Fallback if term not in knowledge base
+    return `<p>NeuroSync detected you might need help with <span class="neurosync-tooltip-term">${term}</span>.</p><p>This term isn't in our knowledge base yet. We're adding more definitions daily!</p>`;
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   getExampleContent(term) {
