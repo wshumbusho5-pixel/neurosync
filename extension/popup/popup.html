@@ -11,15 +11,16 @@
     }
 
     body {
-      width: 350px;
+      width: 380px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
       background: #fafafa;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      padding: 20px 20px 16px;
+      background: white;
+      border-bottom: 1px solid #e5e5e7;
     }
 
     .logo {
@@ -36,6 +37,42 @@
     .subtitle {
       font-size: 12px;
       color: #86868b;
+    }
+
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #e5e5e7;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #86868b;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: #1d1d1f;
+    }
+
+    .tab.active {
+      color: #ea580c;
+      border-bottom-color: #ea580c;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
     }
 
     .stats {
@@ -71,6 +108,138 @@
       color: #34c759;
     }
 
+    .setting-section {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .setting-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 12px;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      color: #1d1d1f;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .setting-description {
+      font-size: 11px;
+      color: #86868b;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d2d2d7;
+      transition: 0.3s;
+      border-radius: 26px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #34c759;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(18px);
+    }
+
+    .slider-container {
+      padding: 12px 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #1d1d1f;
+      margin-bottom: 8px;
+    }
+
+    .slider-value {
+      font-weight: 600;
+      color: #ea580c;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #d2d2d7;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ea580c;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ea580c;
+      cursor: pointer;
+      border: none;
+    }
+
     .actions {
       display: flex;
       gap: 8px;
@@ -96,6 +265,11 @@
       background: #dc2626;
     }
 
+    .btn-primary.disabled {
+      background: #d2d2d7;
+      cursor: not-allowed;
+    }
+
     .btn-secondary {
       background: white;
       color: #1d1d1f;
@@ -107,7 +281,7 @@
     }
 
     .footer {
-      margin-top: 16px;
+      padding: 16px 20px;
       text-align: center;
       font-size: 11px;
       color: #86868b;
@@ -117,6 +291,24 @@
       color: #ea580c;
       text-decoration: none;
     }
+
+    .category-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin: 2px;
+    }
+
+    .badge-react { background: #61dafb20; color: #61dafb; }
+    .badge-js { background: #f7df1e20; color: #f0a800; }
+    .badge-python { background: #306e9820; color: #306998; }
+    .badge-database { background: #4db33d20; color: #4db33d; }
+    .badge-git { background: #f0502520; color: #f05025; }
+    .badge-devops { background: #0db7ed20; color: #0db7ed; }
+    .badge-backend { background: #68a06320; color: #68a063; }
+    .badge-cs { background: #86868b20; color: #86868b; }
   </style>
 </head>
 <body>
@@ -126,24 +318,141 @@
     <div class="subtitle">Phase 0 - Behavioral Prediction</div>
   </div>
 
-  <div class="stats">
-    <div class="stat-row">
-      <span class="stat-label">Predictions shown</span>
-      <span class="stat-value" id="total-predictions">0</span>
+  <div class="tabs">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="settings">Settings</div>
+    <div class="tab" data-tab="info">Info</div>
+  </div>
+
+  <!-- Overview Tab -->
+  <div class="tab-content active" id="overview">
+    <div class="stats">
+      <div class="stat-row">
+        <span class="stat-label">Predictions shown</span>
+        <span class="stat-value" id="total-predictions">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Marked helpful</span>
+        <span class="stat-value positive" id="helpful-count">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Accuracy</span>
+        <span class="stat-value positive" id="accuracy">0%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Status</span>
+        <span class="stat-value" id="status">Enabled</span>
+      </div>
     </div>
-    <div class="stat-row">
-      <span class="stat-label">Marked helpful</span>
-      <span class="stat-value positive" id="helpful-count">0</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Accuracy</span>
-      <span class="stat-value positive" id="accuracy">0%</span>
+
+    <div class="actions">
+      <button class="btn-primary" id="toggle-btn">Disable</button>
+      <button class="btn-secondary" id="clear-btn">Clear Data</button>
     </div>
   </div>
 
-  <div class="actions">
-    <button class="btn-primary" id="enable-btn">Enabled</button>
-    <button class="btn-secondary" id="clear-btn">Clear Data</button>
+  <!-- Settings Tab -->
+  <div class="tab-content" id="settings">
+    <div class="setting-section">
+      <div class="setting-header">Prediction Patterns</div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Confusion Detection</div>
+          <div class="setting-description">Shows definitions when you pause + hover</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pattern-confusion" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Search Intent</div>
+          <div class="setting-description">Detects when you're looking for info</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pattern-search" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Context Loss</div>
+          <div class="setting-description">Helps when you return after time away</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pattern-context" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="setting-section">
+      <div class="setting-header">Sensitivity</div>
+
+      <div class="slider-container">
+        <div class="slider-label">
+          <span>Confidence Threshold</span>
+          <span class="slider-value" id="threshold-value">70%</span>
+        </div>
+        <input type="range" id="confidence-threshold" min="50" max="95" value="70" step="5">
+        <div class="setting-description" style="margin-top: 8px;">
+          Higher = fewer but more accurate predictions
+        </div>
+      </div>
+
+      <div class="slider-container" style="margin-top: 16px;">
+        <div class="slider-label">
+          <span>Prediction Cooldown</span>
+          <span class="slider-value" id="cooldown-value">30s</span>
+        </div>
+        <input type="range" id="prediction-cooldown" min="10" max="60" value="30" step="5">
+        <div class="setting-description" style="margin-top: 8px;">
+          Time between predictions
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Tab -->
+  <div class="tab-content" id="info">
+    <div class="setting-section">
+      <div class="setting-header">Knowledge Base</div>
+      <div class="stat-row">
+        <span class="stat-label">Total Terms</span>
+        <span class="stat-value" id="term-count">52</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Categories</span>
+        <span class="stat-value">8</span>
+      </div>
+      <div style="margin-top: 12px;">
+        <span class="category-badge badge-react">React (7)</span>
+        <span class="category-badge badge-js">JavaScript (6)</span>
+        <span class="category-badge badge-python">Python (4)</span>
+        <span class="category-badge badge-database">Database (7)</span>
+        <span class="category-badge badge-git">Git (6)</span>
+        <span class="category-badge badge-devops">DevOps (5)</span>
+        <span class="category-badge badge-backend">Backend (8)</span>
+        <span class="category-badge badge-cs">CS (4)</span>
+      </div>
+    </div>
+
+    <div class="setting-section">
+      <div class="setting-header">How It Works</div>
+      <div class="setting-description" style="line-height: 1.6;">
+        NeuroSync watches how you read documentation and predicts when you need help:
+        <br><br>
+        <strong>Confusion:</strong> Pause 3s + hover = Show definition<br>
+        <strong>Search:</strong> Multiple pauses/hovers = Show related terms<br>
+        <strong>Context Loss:</strong> Tab away 10+ min = Show summary<br>
+        <br>
+        No brain sensors needed - just behavioral signals!
+      </div>
+    </div>
   </div>
 
   <div class="footer">
