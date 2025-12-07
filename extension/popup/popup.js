@@ -10,10 +10,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load current settings and stats
   await loadSettings();
   await loadStats();
+  await loadUsageStats();
 
   // Setup event listeners
   document.getElementById('toggle-btn').addEventListener('click', toggleGlobalEnabled);
   document.getElementById('clear-btn').addEventListener('click', clearData);
+
+  // Upgrade button
+  const upgradeBtn = document.getElementById('upgrade-btn');
+  if (upgradeBtn) {
+    upgradeBtn.addEventListener('click', handleUpgrade);
+  }
 
   // Pattern toggles
   document.getElementById('pattern-confusion').addEventListener('change', savePatternSettings);
@@ -117,6 +124,86 @@ async function loadStats() {
   const btn = document.getElementById('toggle-btn');
   btn.textContent = settings.enabled ? 'Disable' : 'Enable';
   btn.className = settings.enabled ? 'btn-primary' : 'btn-secondary';
+}
+
+/**
+ * Load usage statistics (freemium)
+ */
+async function loadUsageStats() {
+  try {
+    // Get subscription status
+    const subscription = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: 'get_subscription' }, resolve);
+    });
+
+    // Get today's usage
+    const todayUsage = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: 'get_today_usage' }, resolve);
+    });
+
+    // Update plan tier
+    const planTier = document.getElementById('plan-tier');
+    if (subscription.isPro) {
+      planTier.textContent = '✨ Pro';
+      planTier.style.color = '#667eea';
+      planTier.style.fontWeight = '600';
+
+      // Hide usage limits for Pro users
+      document.getElementById('usage-row').style.display = 'none';
+      document.getElementById('reset-row').style.display = 'none';
+      document.getElementById('upgrade-cta').style.display = 'none';
+    } else {
+      planTier.textContent = 'Free';
+      planTier.style.color = '#86868b';
+
+      // Show usage for Free users
+      const usageText = `${todayUsage.predictionsToday} / 20`;
+      document.getElementById('usage-today').textContent = usageText;
+
+      // Calculate time until reset
+      const resetTime = calculateTimeUntilReset(todayUsage.resetsAt);
+      document.getElementById('reset-time').textContent = resetTime;
+
+      // Show upgrade CTA if approaching or at limit
+      if (todayUsage.predictionsToday >= 15) {
+        document.getElementById('upgrade-cta').style.display = 'block';
+      }
+    }
+  } catch (error) {
+    console.error('[NeuroSync] Error loading usage stats:', error);
+  }
+}
+
+/**
+ * Calculate human-readable time until reset
+ */
+function calculateTimeUntilReset(resetsAt) {
+  const now = Date.now();
+  const msUntilReset = resetsAt - now;
+
+  if (msUntilReset <= 0) {
+    return 'Now';
+  }
+
+  const hours = Math.floor(msUntilReset / (1000 * 60 * 60));
+  const minutes = Math.floor((msUntilReset % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else {
+    return `${minutes}m`;
+  }
+}
+
+/**
+ * Handle upgrade to Pro
+ */
+function handleUpgrade() {
+  // TODO: Integrate with Stripe
+  alert('NeuroSync Pro upgrade coming soon! Stripe integration in progress.');
+
+  // TODO: Open Stripe checkout
+  // chrome.runtime.sendMessage({ type: 'start_checkout' });
 }
 
 /**

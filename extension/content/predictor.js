@@ -14,10 +14,17 @@ class PredictionEngine {
     console.log('[NeuroSync] Prediction engine initialized');
   }
 
-  analyze(events) {
+  async analyze(events) {
     // Rate limiting - don't predict too frequently
     const now = Date.now();
     if (now - this.lastPredictionTime < this.minPredictionInterval) {
+      return null;
+    }
+
+    // Check usage limits (freemium)
+    const canPredict = await this.checkCanPredict();
+    if (!canPredict.allowed) {
+      this.showPaywall(canPredict);
       return null;
     }
 
@@ -29,11 +36,46 @@ class PredictionEngine {
 
     if (prediction && prediction.confidence >= this.confidenceThreshold) {
       this.lastPredictionTime = now;
+
+      // Record this prediction for usage tracking
+      await this.recordPrediction();
+
       this.showPrediction(prediction);
       return prediction;
     }
 
     return null;
+  }
+
+  async checkCanPredict() {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage(
+        { type: 'check_can_predict' },
+        (response) => {
+          resolve(response);
+        }
+      );
+    });
+  }
+
+  async recordPrediction() {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage(
+        { type: 'record_prediction' },
+        (response) => {
+          resolve(response);
+        }
+      );
+    });
+  }
+
+  showPaywall(limitInfo) {
+    console.log('[NeuroSync] Usage limit reached:', limitInfo);
+
+    // Send to UI layer to show paywall
+    if (window.neurosyncUI) {
+      window.neurosyncUI.displayPaywall(limitInfo);
+    }
   }
 
   /**

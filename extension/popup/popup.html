@@ -462,9 +462,32 @@
 
   <!-- Overview Tab -->
   <div class="tab-content active" id="overview">
+    <!-- Subscription Status -->
+    <div class="stats" id="subscription-box">
+      <div class="stat-row">
+        <span class="stat-label">Plan</span>
+        <span class="stat-value" id="plan-tier">Free</span>
+      </div>
+      <div class="stat-row" id="usage-row">
+        <span class="stat-label">Today's usage</span>
+        <span class="stat-value" id="usage-today">0 / 20</span>
+      </div>
+      <div class="stat-row" id="reset-row">
+        <span class="stat-label">Resets in</span>
+        <span class="stat-value" id="reset-time">--</span>
+      </div>
+    </div>
+
+    <div id="upgrade-cta" style="display: none; margin-bottom: 16px;">
+      <button class="btn-primary" id="upgrade-btn" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+        ✨ Upgrade to Pro - $4.99/month
+      </button>
+    </div>
+
+    <!-- Stats -->
     <div class="stats">
       <div class="stat-row">
-        <span class="stat-label">Predictions shown</span>
+        <span class="stat-label">All-time predictions</span>
         <span class="stat-value" id="total-predictions">0</span>
       </div>
       <div class="stat-row">
