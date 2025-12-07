@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "NeuroSync - Phase 0",
+  "version": "0.1.0",
+  "description": "AI that predicts your information needs by understanding how you read",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "content/knowledge-base.js",
+        "content/tracker.js",
+        "content/predictor.js",
+        "content/ui.js"
+      ],
+      "css": ["assets/styles/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/styles/*.css", "assets/icons/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
