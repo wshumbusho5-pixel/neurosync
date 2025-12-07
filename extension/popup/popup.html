@@ -309,6 +309,141 @@
     .badge-devops { background: #0db7ed20; color: #0db7ed; }
     .badge-backend { background: #68a06320; color: #68a063; }
     .badge-cs { background: #86868b20; color: #86868b; }
+
+    .search-container {
+      position: relative;
+    }
+
+    #term-search {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e5e7;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    #term-search:focus {
+      outline: none;
+      border-color: #ea580c;
+    }
+
+    #search-results {
+      margin-top: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .search-result-item {
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 8px;
+      border: 1px solid #e5e5e7;
+    }
+
+    .search-result-item:hover {
+      background: #f5f5f7;
+    }
+
+    .search-result-term {
+      font-weight: 600;
+      color: #1d1d1f;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .search-result-definition {
+      font-size: 12px;
+      color: #86868b;
+      line-height: 1.4;
+    }
+
+    .term-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .term-detail-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1d1d1f;
+      font-family: 'Monaco', 'Menlo', monospace;
+    }
+
+    .term-detail-category {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .term-detail-content {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #1d1d1f;
+    }
+
+    .term-detail-section {
+      margin-bottom: 16px;
+    }
+
+    .term-detail-label {
+      font-weight: 600;
+      color: #86868b;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .term-detail-example {
+      background: #f5f5f7;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .category-item {
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 8px;
+      border: 1px solid #e5e5e7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-item:hover {
+      background: #f5f5f7;
+    }
+
+    .category-name {
+      font-weight: 500;
+      color: #1d1d1f;
+      font-size: 14px;
+    }
+
+    .category-count {
+      font-size: 12px;
+      color: #86868b;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 24px;
+      color: #86868b;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -321,6 +456,7 @@
   <div class="tabs">
     <div class="tab active" data-tab="overview">Overview</div>
     <div class="tab" data-tab="settings">Settings</div>
+    <div class="tab" data-tab="glossary">Glossary</div>
     <div class="tab" data-tab="info">Info</div>
   </div>
 
@@ -413,6 +549,30 @@
         <div class="setting-description" style="margin-top: 8px;">
           Time between predictions
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glossary Tab -->
+  <div class="tab-content" id="glossary">
+    <div class="setting-section">
+      <div class="search-container">
+        <input type="text" id="term-search" placeholder="Search for a term..." autocomplete="off">
+        <div id="search-results"></div>
+      </div>
+    </div>
+
+    <div id="term-details" style="display: none;">
+      <div class="setting-section">
+        <button id="back-to-search" class="btn-secondary" style="margin-bottom: 12px;">← Back to search</button>
+        <div id="term-display"></div>
+      </div>
+    </div>
+
+    <div id="browse-categories">
+      <div class="setting-section">
+        <div class="setting-header">Browse by Category</div>
+        <div id="category-list"></div>
       </div>
     </div>
   </div>
