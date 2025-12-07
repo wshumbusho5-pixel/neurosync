@@ -207,6 +207,136 @@ class NeuroSyncUI {
         background: #fef3c7;
       }
 
+      /* Paywall Styles */
+      .neurosync-paywall {
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        max-width: 420px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 999999;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        animation: neurosync-slide-in 0.3s ease-out;
+        color: white;
+        overflow: hidden;
+      }
+
+      .neurosync-paywall-header {
+        padding: 24px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .neurosync-paywall-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+      }
+
+      .neurosync-paywall-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+      }
+
+      .neurosync-paywall-subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+        margin: 0;
+      }
+
+      .neurosync-paywall-content {
+        padding: 24px;
+      }
+
+      .neurosync-paywall-limit {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .neurosync-paywall-limit-number {
+        font-size: 36px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .neurosync-paywall-limit-text {
+        font-size: 13px;
+        opacity: 0.9;
+      }
+
+      .neurosync-paywall-features {
+        margin-bottom: 20px;
+      }
+
+      .neurosync-paywall-feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      .neurosync-paywall-feature-icon {
+        margin-right: 10px;
+        font-size: 18px;
+      }
+
+      .neurosync-paywall-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .neurosync-btn-upgrade {
+        padding: 14px 24px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #667eea;
+        transition: all 0.2s;
+      }
+
+      .neurosync-btn-upgrade:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .neurosync-btn-dismiss {
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: transparent;
+        color: white;
+        transition: all 0.2s;
+      }
+
+      .neurosync-btn-dismiss:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .neurosync-paywall-footer {
+        padding: 16px 24px;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.8;
+        background: rgba(0, 0, 0, 0.1);
+      }
+
       /* Keyboard Shortcuts Help Overlay */
       .neurosync-help-overlay {
         position: fixed;
@@ -549,6 +679,7 @@ class NeuroSyncUI {
       feedback.push({
         prediction: prediction,
         action: action,
+        helpful: action === 'helpful',
         timestamp: Date.now()
       });
 
@@ -556,6 +687,13 @@ class NeuroSyncUI {
       const recentFeedback = feedback.slice(-100);
 
       chrome.storage.local.set({ feedback: recentFeedback });
+
+      // Also record in usage tracker for analytics
+      chrome.runtime.sendMessage({
+        type: 'record_feedback',
+        helpful: action === 'helpful',
+        pattern: prediction.type // confusion, search_intent, context_loss
+      });
     });
   }
 
@@ -782,6 +920,114 @@ class NeuroSyncUI {
       helpOverlay.remove();
     }
     this.showingHelp = false;
+  }
+
+  /**
+   * Display paywall when usage limit is reached
+   */
+  displayPaywall(limitInfo) {
+    // Remove existing tooltips/paywalls
+    this.removeTooltip();
+    const existingPaywall = document.getElementById('neurosync-paywall');
+    if (existingPaywall) {
+      existingPaywall.remove();
+    }
+
+    // Calculate time until reset
+    const hoursUntilReset = Math.ceil((limitInfo.resetsAt - Date.now()) / (1000 * 60 * 60));
+
+    const paywall = document.createElement('div');
+    paywall.className = 'neurosync-paywall';
+    paywall.id = 'neurosync-paywall';
+
+    paywall.innerHTML = `
+      <div class="neurosync-paywall-header">
+        <div class="neurosync-paywall-icon">🚀</div>
+        <h2 class="neurosync-paywall-title">Daily Limit Reached</h2>
+        <p class="neurosync-paywall-subtitle">Upgrade to NeuroSync Pro for unlimited predictions</p>
+      </div>
+
+      <div class="neurosync-paywall-content">
+        <div class="neurosync-paywall-limit">
+          <span class="neurosync-paywall-limit-number">${limitInfo.limit}/day</span>
+          <span class="neurosync-paywall-limit-text">Free tier limit • Resets in ${hoursUntilReset}h</span>
+        </div>
+
+        <div class="neurosync-paywall-features">
+          <div class="neurosync-paywall-feature">
+            <span class="neurosync-paywall-feature-icon">✨</span>
+            <span>Unlimited predictions</span>
+          </div>
+          <div class="neurosync-paywall-feature">
+            <span class="neurosync-paywall-feature-icon">📚</span>
+            <span>Expanded knowledge base (200+ terms)</span>
+          </div>
+          <div class="neurosync-paywall-feature">
+            <span class="neurosync-paywall-feature-icon">📊</span>
+            <span>Advanced analytics & insights</span>
+          </div>
+          <div class="neurosync-paywall-feature">
+            <span class="neurosync-paywall-feature-icon">🎯</span>
+            <span>Priority support</span>
+          </div>
+        </div>
+
+        <div class="neurosync-paywall-actions">
+          <button class="neurosync-btn-upgrade" data-action="upgrade">
+            Upgrade to Pro - $4.99/month
+          </button>
+          <button class="neurosync-btn-dismiss" data-action="dismiss">
+            Maybe later
+          </button>
+        </div>
+      </div>
+
+      <div class="neurosync-paywall-footer">
+        Cancel anytime • 7-day money-back guarantee
+      </div>
+    `;
+
+    // Add event listeners
+    const upgradeButton = paywall.querySelector('[data-action="upgrade"]');
+    const dismissButton = paywall.querySelector('[data-action="dismiss"]');
+
+    upgradeButton.addEventListener('click', () => {
+      this.handleUpgrade();
+    });
+
+    dismissButton.addEventListener('click', () => {
+      paywall.remove();
+    });
+
+    document.body.appendChild(paywall);
+
+    // Auto-dismiss after 60 seconds
+    setTimeout(() => {
+      if (document.getElementById('neurosync-paywall') === paywall) {
+        paywall.remove();
+      }
+    }, 60000);
+  }
+
+  /**
+   * Handle upgrade button click
+   */
+  handleUpgrade() {
+    // For now, open a placeholder page
+    // TODO: Integrate with Stripe
+    console.log('[NeuroSync] Upgrade to Pro clicked');
+
+    // Remove paywall
+    const paywall = document.getElementById('neurosync-paywall');
+    if (paywall) {
+      paywall.remove();
+    }
+
+    // Show success message (temporary - will be replaced with Stripe checkout)
+    alert('NeuroSync Pro upgrade coming soon! Stripe integration in progress.');
+
+    // TODO: Implement Stripe checkout flow
+    // chrome.runtime.sendMessage({ type: 'start_checkout' });
   }
 }
 
