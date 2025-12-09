@@ -247,8 +247,13 @@ class PredictionEngine {
     return matches && matches.length >= 3;
   }
 
-  showPrediction(prediction) {
+  async showPrediction(prediction) {
     console.log('[NeuroSync] Prediction:', prediction);
+
+    // Enrich prediction with AI explanation if needed
+    if (prediction.term && prediction.action === 'show_definition') {
+      await this.enrichWithAI(prediction);
+    }
 
     // Send to UI layer
     if (window.neurosyncUI) {
@@ -257,6 +262,57 @@ class PredictionEngine {
 
     // Store prediction for analytics
     this.storePrediction(prediction);
+  }
+
+  /**
+   * Enrich prediction with AI-powered explanation
+   */
+  async enrichWithAI(prediction) {
+    try {
+      console.log('[NeuroSync] Fetching AI explanation for:', prediction.term);
+
+      // Build context from content extractor
+      const context = window.neurosyncContentExtractor
+        ? window.neurosyncContentExtractor.buildAIContext(
+            prediction.term,
+            prediction.element
+          )
+        : {};
+
+      // Request AI explanation from background script
+      const response = await chrome.runtime.sendMessage({
+        type: 'ai_explain',
+        term: prediction.term,
+        context: context
+      });
+
+      if (response.success) {
+        // Add AI explanation to prediction
+        prediction.aiExplanation = response.explanation;
+        prediction.source = response.source; // 'ai', 'cache', 'hardcoded'
+        prediction.fromCache = response.fromCache;
+
+        console.log('[NeuroSync] AI explanation received from:', response.source);
+
+        // Track cost if AI was used
+        if (response.usage) {
+          console.log('[NeuroSync] API cost:', `$${response.usage.cost?.toFixed(4) || '0.0000'}`);
+        }
+      } else {
+        console.warn('[NeuroSync] AI explanation failed:', response.error);
+
+        // Add fallback message
+        prediction.aiExplanation = `**${prediction.term}**\n\n${response.error || 'Unable to fetch explanation.'}`;
+        prediction.source = 'error';
+      }
+
+    } catch (error) {
+      console.error('[NeuroSync] Error enriching with AI:', error);
+
+      // Fallback to basic message
+      prediction.aiExplanation = `**${prediction.term}**\n\nNo explanation available.`;
+      prediction.source = 'error';
+    }
   }
 
   storePrediction(prediction) {

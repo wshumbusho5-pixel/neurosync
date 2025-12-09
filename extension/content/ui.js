@@ -506,6 +506,10 @@ class NeuroSyncUI {
     tooltip.className = 'neurosync-tooltip';
     tooltip.id = 'neurosync-current-tooltip';
 
+    // Check if we have AI explanation
+    const hasAI = prediction.aiExplanation;
+    const sourceLabel = this.getSourceLabel(prediction.source);
+
     tooltip.innerHTML = `
       <div class="neurosync-tooltip-header">
         <span class="neurosync-tooltip-icon">💡</span>
@@ -514,7 +518,7 @@ class NeuroSyncUI {
       </div>
 
       <div class="neurosync-tooltip-content">
-        ${this.getDefinitionContent(prediction.term)}
+        ${hasAI ? this.renderMarkdown(prediction.aiExplanation) : this.getDefinitionContent(prediction.term)}
       </div>
 
       <div class="neurosync-tooltip-actions">
@@ -527,7 +531,7 @@ class NeuroSyncUI {
       </div>
 
       <div class="neurosync-branding">
-        Powered by NeuroSync (Phase 0)
+        ${sourceLabel} | NeuroSync AI
       </div>
     `;
 
@@ -1012,9 +1016,7 @@ class NeuroSyncUI {
   /**
    * Handle upgrade button click
    */
-  handleUpgrade() {
-    // For now, open a placeholder page
-    // TODO: Integrate with Stripe
+  async handleUpgrade() {
     console.log('[NeuroSync] Upgrade to Pro clicked');
 
     // Remove paywall
@@ -1023,11 +1025,105 @@ class NeuroSyncUI {
       paywall.remove();
     }
 
-    // Show success message (temporary - will be replaced with Stripe checkout)
-    alert('NeuroSync Pro upgrade coming soon! Stripe integration in progress.');
+    // Show loading message
+    const loading = this.showLoadingMessage('Redirecting to secure checkout...');
 
-    // TODO: Implement Stripe checkout flow
-    // chrome.runtime.sendMessage({ type: 'start_checkout' });
+    try {
+      // Create Stripe checkout session
+      const response = await chrome.runtime.sendMessage({ type: 'create_checkout' });
+
+      if (response.success) {
+        console.log('[NeuroSync] Checkout session created, redirecting to Stripe...');
+        // Stripe will open in a new tab
+      } else {
+        throw new Error(response.error || 'Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('[NeuroSync] Error starting checkout:', error);
+      alert('Unable to start checkout. Please make sure the payment server is running.');
+    } finally {
+      loading.remove();
+    }
+  }
+
+  showLoadingMessage(message) {
+    const loading = document.createElement('div');
+    loading.id = 'neurosync-loading';
+    loading.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #7c3aed;
+      border-radius: 12px;
+      padding: 24px 32px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      z-index: 999999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      text-align: center;
+    `;
+    loading.innerHTML = `
+      <div style="font-size: 16px; color: #333; font-weight: 500;">
+        ${message}
+      </div>
+      <div style="margin-top: 12px;">
+        <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #7c3aed; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      </div>
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+    document.body.appendChild(loading);
+    return loading;
+  }
+
+  /**
+   * Get source label for branding
+   */
+  getSourceLabel(source) {
+    const labels = {
+      'ai': '🤖 AI-Powered',
+      'cache': '⚡ AI (Cached)',
+      'hardcoded': '📚 Knowledge Base',
+      'error': '⚠️ Offline Mode'
+    };
+
+    return labels[source] || '💡 NeuroSync';
+  }
+
+  /**
+   * Render markdown to HTML
+   */
+  renderMarkdown(markdown) {
+    if (!markdown) return '';
+
+    let html = markdown;
+
+    // Convert **bold** to <strong>
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // Convert *italic* to <em>
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // Convert `code` to <code>
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Convert ```code blocks``` to <pre><code>
+    html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+      return `<pre style="background: #f5f5f7; padding: 12px; border-radius: 6px; font-size: 13px; overflow-x: auto; margin: 8px 0;"><code>${this.escapeHtml(code.trim())}</code></pre>`;
+    });
+
+    // Convert line breaks to <br> (for lists and paragraphs)
+    html = html.replace(/\n\n/g, '</p><p style="margin: 8px 0;">');
+    html = html.replace(/\n/g, '<br>');
+
+    // Wrap in paragraph
+    html = `<p style="margin: 8px 0;">${html}</p>`;
+
+    return html;
   }
 }
 
