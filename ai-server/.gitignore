@@ -1,0 +1,55 @@
+# Environment variables (NEVER commit these!)
+.env
+.env.local
+.env.production
+
+# API Keys (CRITICAL - never commit!)
+*.key
+*.pem
+secrets/
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Cache data
+cache/
+*.cache
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Build output
+dist/
+build/
