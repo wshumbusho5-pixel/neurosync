@@ -198,12 +198,35 @@ function calculateTimeUntilReset(resetsAt) {
 /**
  * Handle upgrade to Pro
  */
-function handleUpgrade() {
-  // TODO: Integrate with Stripe
-  alert('NeuroSync Pro upgrade coming soon! Stripe integration in progress.');
+async function handleUpgrade() {
+  console.log('[NeuroSync] Upgrade button clicked from popup');
 
-  // TODO: Open Stripe checkout
-  // chrome.runtime.sendMessage({ type: 'start_checkout' });
+  try {
+    // Show loading state
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    const originalText = upgradeBtn.textContent;
+    upgradeBtn.textContent = 'Opening checkout...';
+    upgradeBtn.disabled = true;
+
+    // Create Stripe checkout session
+    const response = await chrome.runtime.sendMessage({ type: 'create_checkout' });
+
+    if (response.success) {
+      console.log('[NeuroSync] Checkout session created, redirecting to Stripe...');
+      // Stripe will open in a new tab, close the popup
+      window.close();
+    } else {
+      throw new Error(response.error || 'Failed to create checkout session');
+    }
+  } catch (error) {
+    console.error('[NeuroSync] Error starting checkout:', error);
+    alert('Unable to start checkout. Please make sure the payment server is running.\n\nError: ' + error.message);
+
+    // Reset button
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    upgradeBtn.textContent = '✨ Upgrade to Pro - $4.99/month';
+    upgradeBtn.disabled = false;
+  }
 }
 
 /**
