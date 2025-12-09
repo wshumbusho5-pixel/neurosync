@@ -66,18 +66,35 @@ Read the full narrative behind NeuroSync in [STORY.md](./STORY.md) - discover ho
 
 ## 🚀 Project Status
 
-**Phase:** Concept & Planning
+**Phase 0:** Browser Extension (Available Now)
 
-This repository currently contains:
-- The founding story and vision
-- Technical concept documentation
-- Ethical framework
+### What's Built
+
+**Core Extension:**
+- ✅ Behavioral prediction (no brain sensors required yet)
+- ✅ 52-term technical knowledge base across 8 categories
+- ✅ Pattern detection (confusion, search intent, context loss)
+- ✅ User preferences & keyboard shortcuts
+- ✅ Searchable glossary
+
+**Freemium System:**
+- ✅ Free tier: 20 predictions/day
+- ✅ Pro tier: Unlimited predictions ($4.99/month)
+- ✅ Stripe payment integration
+- ✅ Usage tracking & analytics
+
+### Documentation
+
+- [PHASE_0_STATUS.md](./PHASE_0_STATUS.md) - Current status & features
+- [STRIPE_SETUP.md](./STRIPE_SETUP.md) - Payment setup guide
+- [FREEMIUM.md](./FREEMIUM.md) - Freemium system details
+- [TESTING_GUIDE.md](./TESTING_GUIDE.md) - How to test the extension
+- [SAFARI_INSTALLATION.md](./SAFARI_INSTALLATION.md) - Browser installation
 
 **Coming Soon:**
-- Technical architecture
-- Prototype development
-- Research partnerships
-- Hardware integration plans
+- Phase 1: ML-based prediction models
+- Phase 2: Brain sensor integration (EEG)
+- Phase 3: Multi-device sync & collaboration
 
 ---
 
